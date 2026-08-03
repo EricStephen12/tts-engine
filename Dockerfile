@@ -56,4 +56,6 @@ EXPOSE 8100
 USER appuser
 
 # Railway injects $PORT; local runs fall back to 8100
-CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8100}"]
+COPY --chown=appuser:appuser entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+CMD ["/app/entrypoint.sh"]
