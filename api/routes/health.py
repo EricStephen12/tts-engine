@@ -22,6 +22,11 @@ async def health() -> HealthResponse:
     )
 
 
+@router.get("/", response_model=HealthResponse)
+async def root() -> HealthResponse:
+    return await health()
+
+
 @router.get("/health/ready")
 async def ready() -> dict:
     manager = get_model_manager()
