@@ -1,0 +1,15 @@
+# Environment files
+.env
+
+# Python virtualenv
+.venv/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Local model downloads (if you keep them outside repository)
+models/
+
+# Logs
+*.log

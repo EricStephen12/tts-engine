@@ -1,0 +1,29 @@
+# Python artifacts
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Environment / secrets
+.env
+
+# Test suite (not needed in production image)
+tests/
+
+# Version control
+.git/
+.gitignore
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# Build artefacts
+*.egg-info/
+dist/
+build/
+
+# Docs (optional — keeps image lean)
+docs/
