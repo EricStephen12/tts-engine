@@ -13,6 +13,7 @@ from typing import Iterator
 import numpy as np
 
 from audio.postprocess import (
+    add_background_noise,
     apply_gain,
     apply_pitch_shift,
     crossfade_concat,
@@ -84,6 +85,16 @@ class TTSEngine:
                 f"Unknown voice {voice!r}. Available voices: {', '.join(available)}"
             )
 
+    def _normalize_lang(self, lang: str | None) -> str | None:
+        if lang is None:
+            return None
+        normalized = lang.strip().lower().replace("_", "-")
+        language_aliases = {
+            "en": "en-us",
+            "en-uk": "en-gb",
+        }
+        return language_aliases.get(normalized, normalized)
+
     def _synthesize_segment(
         self, seg: Segment, voice: str, lang: str, emotion: str, speed: float
     ) -> tuple[np.ndarray, int, float]:
@@ -94,9 +105,10 @@ class TTSEngine:
         effective_speed = round(speed * profile.speed_multiplier, 3)
 
         with Timer() as t:
+            normalized_lang = self._normalize_lang(lang)
             try:
                 audio, sample_rate = self._model_manager.synthesize(
-                    seg.text, voice=voice, speed=effective_speed, lang=lang
+                    seg.text, voice=voice, speed=effective_speed, lang=normalized_lang
                 )
             except Exception as exc:  # noqa: BLE001
                 raise SynthesisError(f"Synthesis failed for segment: {exc}") from exc
@@ -117,6 +129,7 @@ class TTSEngine:
         emotion: str = "neutral",
         speed: float = 1.0,
         lang: str | None = None,
+        background_noise: float = 0.0,
         validate_voice: bool = True,
     ) -> SynthesisResult:
         settings = self._settings
@@ -138,6 +151,7 @@ class TTSEngine:
                     chunks.append(generate_silence(seg.pause_after_ms, sample_rate))
 
             final_audio = crossfade_concat(chunks, sample_rate)
+            final_audio = add_background_noise(final_audio, background_noise)
 
         audio_duration_s = len(final_audio) / sample_rate if sample_rate else 0.0
         process_time_s = total_timer.elapsed_ms / 1000.0
@@ -168,6 +182,7 @@ class TTSEngine:
         emotion: str = "neutral",
         speed: float = 1.0,
         lang: str | None = None,
+        background_noise: float = 0.0,
         validate_voice: bool = True,
     ) -> Iterator[SegmentResult]:
         settings = self._settings
@@ -182,6 +197,7 @@ class TTSEngine:
 
         for idx, seg in enumerate(segments):
             audio, sample_rate, synth_ms = self._synthesize_segment(seg, voice, lang, emotion, speed)
+            audio = add_background_noise(audio, background_noise)
             yield SegmentResult(
                 index=idx,
                 text=seg.text,

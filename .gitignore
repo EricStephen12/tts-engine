@@ -8,8 +8,9 @@
 __pycache__/
 *.py[cod]
 
-# Local model downloads (if you keep them outside repository)
-models/
+# Local ONNX weight downloads only — keep the models/ Python package tracked
+# (Railway builds from git; ignoring models/ previously omitted model_manager.py)
+models/weights/
 
 # Logs
 *.log

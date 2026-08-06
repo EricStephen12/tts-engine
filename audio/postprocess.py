@@ -43,6 +43,17 @@ def normalize_loudness(audio: np.ndarray, target_dbfs: float = -20.0) -> np.ndar
     return apply_gain(audio, gain_db)
 
 
+def add_background_noise(audio: np.ndarray, noise_level: float = 0.0) -> np.ndarray:
+    """Add a very low ambient noise floor for a more human-sounding output."""
+    if audio.size == 0 or noise_level <= 0.0:
+        return audio
+
+    noise_db = float(np.clip(-65.0 + noise_level * 30.0, -80.0, -40.0))
+    noise_amp = 10.0 ** (noise_db / 20.0)
+    noise = np.random.normal(0.0, noise_amp, size=audio.shape).astype(np.float32)
+    return np.clip(audio + noise, -1.0, 1.0).astype(np.float32)
+
+
 def crossfade_concat(chunks: list[np.ndarray], sample_rate: int, crossfade_ms: float = 8.0) -> np.ndarray:
     """Concatenate audio chunks (which may include silence) with a short
     equal-power crossfade at each boundary to avoid audible clicks.

@@ -11,6 +11,12 @@ class TTSRequest(BaseModel):
     lang: str | None = Field(default=None, description="Kokoro language code, e.g. 'a' for American English.")
     emotion: Emotion = Field(default=Emotion.NEUTRAL)
     speed: float = Field(default=1.0, ge=0.5, le=2.0, description="Base speaking rate multiplier.")
+    background_noise: float = Field(
+        default=0.0,
+        ge=0.0,
+        le=1.0,
+        description="Very low ambient noise amount for subtle realism.",
+    )
 
 
 class VoiceListResponse(BaseModel):

@@ -38,6 +38,7 @@ async def synthesize(request: Request, body: TTSRequest) -> Response:
             emotion=body.emotion.value,
             speed=body.speed,
             lang=body.lang,
+            background_noise=body.background_noise,
         )
     except Exception:
         TTS_REQUESTS_TOTAL.labels(endpoint=endpoint, status="error").inc()
@@ -77,6 +78,7 @@ async def synthesize_stream(request: Request, body: TTSRequest) -> StreamingResp
                 emotion=body.emotion.value,
                 speed=body.speed,
                 lang=body.lang,
+                background_noise=body.background_noise,
             ):
                 if not sample_rate_sent:
                     yield json.dumps(

@@ -27,3 +27,6 @@ build/
 
 # Docs (optional — keeps image lean)
 docs/
+
+# Large local weight caches — image downloads them in the build step
+models/weights/

@@ -19,6 +19,7 @@ class Emotion(str, Enum):
     ANGRY = "angry"
     EXCITED = "excited"
     CALM = "calm"
+    HUMAN = "human"
 
 
 @dataclass(frozen=True)
@@ -34,6 +35,7 @@ _PROFILES: dict[Emotion, EmotionProfile] = {
     Emotion.EXCITED: EmotionProfile(1.18, 2.5, 3.0),
     Emotion.SAD: EmotionProfile(0.90, -2.0, -2.0),
     Emotion.CALM: EmotionProfile(0.92, -0.5, -1.0),
+    Emotion.HUMAN: EmotionProfile(0.96, 0.8, -0.5),
     Emotion.ANGRY: EmotionProfile(1.05, 0.5, 3.5),
 }
 
